@@ -1,0 +1,133 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>platkmframework-boot-base</artifactId>
+  <version>1.0.0</version>
+  
+
+  <parent>
+  	<groupId>org.platkmframework</groupId>
+  	<artifactId>platkmframework-parent-jetty</artifactId>
+  	<version>1.0.1</version>
+  </parent>
+
+ 	<name>org.platkmframework:platkmframework-boot-base</name>
+  	<description>base implementation to create web standalone application</description>
+  	<url>https://github.com/platkmframework/platkmframework-boot-base</url>
+	<licenses>
+	  	<license>
+	   		<name>The Apache Software License, Version 2.0</name>
+	   		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	  	</license>
+	</licenses>
+	<developers>
+	  <developer>
+	   <name>Eduardo Iglesias</name>
+	   <email>eiglesias@platkmframework.org</email>
+	   <organization>PLATKMFramework</organization>
+	   <organizationUrl>https://www.platkmframework.org</organizationUrl>
+	  </developer>
+	</developers>  
+	<scm>
+	  <connection>scm:git:git://github.com/simpligility/ossrh-demo.git</connection>
+	  <developerConnection>scm:git:ssh://github.com:simpligility/ossrh-demo.git</developerConnection>
+	  <url>http://github.com/simpligility/ossrh-demo/tree/master</url>
+	</scm> 
+   
+ <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
+  </properties>
+  
+  <build>
+		<plugins>
+	      <plugin>
+	        <artifactId>maven-compiler-plugin</artifactId>
+	        <version>3.8.0</version>
+	        <configuration>
+	          <release>20</release>
+	        </configuration>
+	      </plugin>	
+	      <plugin>
+			<!--  Deploy a "-sources.jar" along with build  -->
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+			<version>3.3.1</version>
+			<executions>
+				<execution>
+					<id>attach-sources</id>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+				</execution>
+			</executions>
+		   </plugin>
+		   <plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-javadoc-plugin</artifactId>
+			    <version>3.11.2</version>
+				<executions>
+					<execution>
+					<id>attach-javadocs</id>
+					<goals>
+					<goal>jar</goal>
+					</goals>
+					</execution>
+				</executions>
+		   </plugin>
+		   <plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-gpg-plugin</artifactId>
+			    <version>3.2.7</version>
+			    <executions>
+			        <execution>
+			            <id>sign-artifacts</id>
+			            <phase>verify</phase>
+			            <goals>
+			                <goal>sign</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+			<plugin>
+		      <groupId>org.sonatype.central</groupId>
+		      <artifactId>central-publishing-maven-plugin</artifactId>
+		      <version>0.6.0</version>
+		      <extensions>true</extensions>
+		      <configuration>
+		         <publishingServerId>central</publishingServerId>
+		         <autoPublish>true</autoPublish>
+		      </configuration>
+		    </plugin>			 
+		</plugins>
+	</build> 
+   
+ 
+  <dependencies>
+ 
+  	<dependency>
+  		<groupId>org.platkmframework</groupId>
+  		<artifactId>platkmframework-annotation</artifactId>
+  		<version>1.1.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.platkmframework</groupId>
+  		<artifactId>platkmframework-content</artifactId>
+  		<version>2.0.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.platkmframework</groupId>
+  		<artifactId>platkmframework-core</artifactId>
+  		<version>1.0.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.platkmframework</groupId>
+  		<artifactId>platkmframework-http-client</artifactId>
+  		<version>1.0.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.platkmframework</groupId>
+  		<artifactId>platkmframework-doi</artifactId>
+  		<version>2.0.0</version>
+  	</dependency>  
+ 
+  </dependencies>
+</project>
