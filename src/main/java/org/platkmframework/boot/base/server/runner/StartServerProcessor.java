@@ -33,17 +33,16 @@ import org.eclipse.jetty.server.handler.ShutdownHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.FilterMapping;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlets.DoSFilter;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
 import org.platkmframework.boot.base.ioc.BootInversionOfControl;
 import org.platkmframework.boot.base.server.filter.CORSFilter;
 import org.platkmframework.boot.base.server.filter.servlet.IndexContentServlet;
-import org.platkmframework.content.ObjectContainer;
-import org.platkmframework.content.project.ContentPropertiesConstant;
-import org.platkmframework.content.project.CorePropertyConstant;
-import org.platkmframework.content.project.ProjectContent;
+import org.platkmframework.context.ObjectContainer;
+import org.platkmframework.context.project.ContentPropertiesConstant;
+import org.platkmframework.context.project.CorePropertyConstant;
+import org.platkmframework.context.project.ProjectContent;
 import org.platkmframework.security.content.filter.SecurityApiFilter;
 import org.platkmframework.util.DataTypeUtil;
 import org.slf4j.Logger;
@@ -214,7 +213,7 @@ public class StartServerProcessor {
      * @param properties properties
      * @param filter filter
      */
-    private void updateDosFilterConfig(DoSFilter filter) {
+    private void updateDosFilterConfig(org.eclipse.jetty.servlets.DoSFilter filter) {
         //
         String DOS_whitelist = ProjectContent.instance().getProperty(C_DOS_WHITELIST,"")!= "" ? ProjectContent.instance().getProperty(C_DOS_WHITELIST) : (System.getenv(C_DOS_WHITELIST) != null ? System.getenv(C_DOS_WHITELIST) : "");
         if (StringUtils.isNotBlank(DOS_whitelist)) {

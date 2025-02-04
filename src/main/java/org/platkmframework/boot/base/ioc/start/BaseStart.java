@@ -1,6 +1,6 @@
 /**
  * ****************************************************************************
- *  Copyright(c) 2023 the original author Eduardo Iglesias Taylor.
+ *  Copyright(c) 2025 the original author Eduardo Iglesias Taylor.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,13 +25,14 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.platkmframework.annotation.HttpRest;
 import org.platkmframework.boot.base.init.BootInitializer;
 import org.platkmframework.boot.base.ioc.BootInversionOfControl;
-import org.platkmframework.content.ObjectContainer;
-import org.platkmframework.content.json.JsonUtil;
-import org.platkmframework.content.project.ContentPropertiesConstant;
-import org.platkmframework.content.project.ProjectContent;
+import org.platkmframework.context.ObjectContainer; 
+import org.platkmframework.context.project.ContentPropertiesConstant;
+import org.platkmframework.context.project.EnvironmentType;
+import org.platkmframework.context.project.ProjectContent;
 import org.platkmframework.core.rmi.RMIException;
 import org.platkmframework.core.rmi.RMIServerManager;
 import org.platkmframework.core.scheduler.SchedulerManager;
@@ -39,6 +40,7 @@ import org.platkmframework.doi.data.ObjectReferece;
 import org.platkmframework.doi.exception.IoDCException;
 import org.platkmframework.httpclient.proxy.HttpRestProxyProcessor;
 import org.platkmframework.proxy.ProxyProcessorFactory;
+import org.platkmframework.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,23 +55,32 @@ public class BaseStart {
 	private static Logger logger = LoggerFactory.getLogger(BaseStart.class);
 	
     /**
-     * start
+     * start 
+     * @param appClass appClass
+     * @param args args
      * @throws Exception Exception
      */
-    public void start(String[] args) throws Exception {
+    public void start(Class appClass, String[] args) throws Exception {
         
+    	if(appClass == null) {
+        	logger.error("Application class should not be null");
+        	System.exit(-1);
+        }
+    	
+    	Properties properties = readDefaultPropertyFile(appClass, args);
     	initJson();
-    	Properties prop = readDefaultPropertyFile(args);
-    	applyIoD(new BootInversionOfControl(), prop);
+    	applyIoD(new BootInversionOfControl(), properties);
         initProxyProcessorFactory();
         initBootInitializer();
     }
 
     /**
      * readDefaultPropertyFile
-     * @param args Properties
+     * @param appClass appClass
+     * @param args args
+     * @return Properties
      */
-    protected Properties readDefaultPropertyFile(String[] args) {
+    protected Properties readDefaultPropertyFile(Class appClass, String[] args) {
 		
     	String propertyFileName = "application.properties";
     	
@@ -84,22 +95,33 @@ public class BaseStart {
                 }
             }
     	if(properties.containsKey("platkmEnv")) {
-    		propertyFileName = "application-" + properties.containsKey("platkmEnv") + ".properties";
+    		EnvironmentType environmentType = EnvironmentType.valueOf(properties.getProperty("platkmEnv",""));
+    		if(environmentType != null) {
+    			propertyFileName = "application-" + environmentType.name() + ".properties";
+    		}
     	}
-    	loadApplicationProperties(propertyFileName, properties);
-    	ProjectContent.instance().putProperties(properties);
+    	loadApplicationProperties(propertyFileName, properties); 
     	
+    	if(properties.containsKey(ContentPropertiesConstant.ORG_PLATKMFRAMEWORK_CONFIGURATION_PACKAGE_PREFIX)) {
+    		String ivdPackage = properties.getProperty(ContentPropertiesConstant.ORG_PLATKMFRAMEWORK_CONFIGURATION_PACKAGE_PREFIX, "");
+    		if(StringUtils.isBlank(ivdPackage)) {
+    			properties.setProperty(ContentPropertiesConstant.ORG_PLATKMFRAMEWORK_CONFIGURATION_PACKAGE_PREFIX, appClass.getPackageName());
+    		}
+    	}else
+    		properties.setProperty(ContentPropertiesConstant.ORG_PLATKMFRAMEWORK_CONFIGURATION_PACKAGE_PREFIX, appClass.getPackageName());
+    	
+    	ProjectContent.instance().putProperties(properties);
 		return properties;
 	}
     
     /**
-     * loadApplicationProperties
-     * @param files files
-     * @throws IOException IOException
+     * load Application Properties
+     * @param propertyFileName property File Name
+     * @param properties properties
      */
     private void loadApplicationProperties(String propertyFileName, Properties properties) {
              
-	    InputStream inputStream = this.getClass().getResourceAsStream(propertyFileName.trim());
+	    InputStream inputStream = this.getClass().getResourceAsStream("/"+propertyFileName.trim());
         if (inputStream == null) {
         	logger.error("properties file not found {}", propertyFileName);
         	System.exit(-1);
@@ -108,17 +130,18 @@ public class BaseStart {
         try {
 			properties.load(inputStream);
 		} catch (IOException e) {
-			logger.error("properties file not found {}", propertyFileName);
+			logger.error("error loading properties file {}, error details {}", propertyFileName, e.getMessage());
         	System.exit(-1);
 		} 
            
     }
 
 	/**
-     * applyIoD
-     * @param bootInversionOfControl bootInversionOfControl
-     * @throws IoDCException IoDCException
-     */
+	 * apply IoD
+	 * @param bootInversionOfControl boot Inversion Of Control
+	 * @param prop prop
+	 * @throws IoDCException IoDCException
+	 */
     protected void applyIoD(BootInversionOfControl bootInversionOfControl, Properties prop) throws IoDCException {
         String javaClassPath = System.getProperty("java.class.path");
         String packagesPrefix = ProjectContent.instance().getProperty(ContentPropertiesConstant.ORG_PLATKMFRAMEWORK_CONFIGURATION_PACKAGE_PREFIX);
@@ -133,11 +156,19 @@ public class BaseStart {
      * initJson
      */
     protected void initJson() {
-        JsonUtil.init();
+        JsonUtil.init(
+        		StringUtils.isNotBlank(ProjectContent.instance().getDateFormat())?
+        				ProjectContent.instance().getDateFormat():ContentPropertiesConstant.ORG_PLATKMFRAMEWORK_JDBC_FORMAT_DATE_DEFAULT,
+        		
+        		StringUtils.isNotBlank(ProjectContent.instance().getDateTimeFormat())?
+                		ProjectContent.instance().getDateTimeFormat(): ContentPropertiesConstant.ORG_PLATKMFRAMEWORK_JDBC_FORMAT_DATE_TIME_DEFAULT,
+                		
+        		StringUtils.isNotBlank(ProjectContent.instance().getTimeFormat())?
+                		ProjectContent.instance().getTimeFormat(): ContentPropertiesConstant.ORG_PLATKMFRAMEWORK_JDBC_FORMAT_TIME_DEFAULT);
     }
 
     /**
-     * initProxyProcessorFactory
+     * init Proxy Processor Factory
      * @throws RMIException RMIException
      */
     protected void initProxyProcessorFactory() throws RMIException {

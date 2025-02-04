@@ -1,16 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <groupId>org.platkmframework.boot</groupId>
   <artifactId>platkmframework-boot-base</artifactId>
   <version>1.0.0</version>
-  
 
-  <parent>
-  	<groupId>org.platkmframework</groupId>
-  	<artifactId>platkmframework-parent-jetty</artifactId>
-  	<version>1.0.1</version>
-  </parent>
-
- 	<name>org.platkmframework:platkmframework-boot-base</name>
+ 	<name>org.platkmframework.boot:platkmframework-boot-base</name>
   	<description>base implementation to create web standalone application</description>
   	<url>https://github.com/platkmframework/platkmframework-boot-base</url>
 	<licenses>
@@ -110,24 +104,59 @@
   	</dependency>
   	<dependency>
   		<groupId>org.platkmframework</groupId>
-  		<artifactId>platkmframework-content</artifactId>
-  		<version>2.0.0</version>
+  		<artifactId>platkmframework-context</artifactId>
+  		<version>1.0.0</version>
   	</dependency>
   	<dependency>
-  		<groupId>org.platkmframework</groupId>
-  		<artifactId>platkmframework-core</artifactId>
-  		<version>1.0.1</version>
+  		<groupId>org.platkmframework.boot</groupId>
+  		<artifactId>platkmframework-boot-core</artifactId>
+  		<version>1.0.0</version>
   	</dependency>
   	<dependency>
   		<groupId>org.platkmframework</groupId>
   		<artifactId>platkmframework-http-client</artifactId>
-  		<version>1.0.1</version>
+  		<version>2.0.0</version>
   	</dependency>
   	<dependency>
-  		<groupId>org.platkmframework</groupId>
+  		<groupId>org.platkmframework.doi</groupId>
   		<artifactId>platkmframework-doi</artifactId>
   		<version>2.0.0</version>
-  	</dependency>  
+  	</dependency> 
+  	
+	<dependency>
+	    <groupId>org.eclipse.jetty.websocket</groupId>
+	    <artifactId>websocket-jakarta-server</artifactId>
+	    <version>11.0.15</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.eclipse.jetty</groupId>
+	    <artifactId>jetty-servlets</artifactId>
+	    <version>11.0.15</version>
+	</dependency>
+	
+    <!-- Bean Validation API -->
+	<dependency>
+	    <groupId>jakarta.validation</groupId>
+	    <artifactId>jakarta.validation-api</artifactId>
+	    <version>3.1.0</version>
+	</dependency>
+
+
+    <!-- Implementación de Bean Validation (Hibernate Validator) -->
+	<dependency>
+	    <groupId>org.hibernate.validator</groupId>
+	    <artifactId>hibernate-validator</artifactId>
+	    <version>8.0.2.Final</version>
+	</dependency>
+
+
+    <!-- Dependencia para EL (Expression Language), requerida por Hibernate Validator -->
+	<dependency>
+	    <groupId>org.glassfish</groupId>
+	    <artifactId>jakarta.el</artifactId>
+	    <version>4.0.2</version>
+	</dependency>
+
  
   </dependencies>
 </project>
